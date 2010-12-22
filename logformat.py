@@ -305,6 +305,7 @@ def handler(req):
         if mode == 'stats':
             # generate statistics
             req.content_type = "application/json; charset=UTF8"
+            req.headers_out["Access-Control-Allow-Origin"] = '"*"'
             req.write(str(DirectoryStatistics(os.path.dirname(req.filename),json=True)))
             return apache.OK
         else:
@@ -323,6 +324,7 @@ def handler(req):
         req.write(str(chatlog(f.read(),"de",plain=True)))
     elif mode == 'stats':
         req.content_type = "application/json; charset=UTF8"
+        req.headers_out["Access-Control-Allow-Origin"] = '"*"'
         req.write(str(DirectoryStatistics.FileStatistics(f.read(),json=True)))
     else:
         req.content_type = "application/xhtml+xml; charset=UTF8"
