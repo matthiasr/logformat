@@ -203,6 +203,59 @@ class DirectoryListing:
     def __str__(self):
         return self.listing
 
+class DirectoryStatistics:
+    class FileStatistics:
+        lines = 0
+        dialoglines = 0
+        datetime = None
+
+        def __init__(self, textlog):
+            firstline = textlog.split("\n")[0]
+            try:
+                locale.setlocale(locale.LC_ALL, "en_US.utf-8")
+                self.datetime = time.strptime(firstline[15:])
+            except ValueError:
+                locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
+                self.datetime = time.strptime(firstline[15:])
+            locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
+
+            for line in textlog.split("\n"):
+                self.lines += 1
+                try:
+                    if line[6] == '<':
+                        self.dialoglines += 1
+                except IndexError:
+                    pass
+
+        def __str__(self):
+            return time.strftime("%Y-%m-%d", self.datetime) + "\t" + str(self.lines) \
+                    + "\t" + str(self.dialoglines)
+
+    __l = []
+    def __init__(self, path):
+        files = [l for l in os.listdir(path) if l[-4:] == ".log"]
+        files.sort()
+        for infile in files:
+            f = open(os.path.join(path,infile), "r")
+            input = f.read()
+            f.close()
+            self.__l.append(self.FileStatistics(input))
+
+    def __getitem__(self,key):
+        return self.__l[key]
+
+    def __len__(self):
+        return len(self.__l)
+
+    def __iter__(self):
+        return iter(self.__l)
+
+    def __str__(self):
+        result = ""
+        for stat in self:
+            result += str(stat) + "\n"
+        return result
+
 
 if __name__ == '__main__':
     infile = argv[1]
@@ -210,6 +263,10 @@ if __name__ == '__main__':
         outfile = os.path.join(infile, "index.xhtml")
         g = open(outfile,"w")
         g.write(str(DirectoryListing(infile, "de")))
+        g.close()
+        statfile = os.path.join(infile, "stats.txt")
+        g = open(statfile,"w")
+        g.write(str(DirectoryStatistics(infile)))
         g.close()
     else:
         outfile = infile + ".xhtml"
@@ -219,6 +276,8 @@ if __name__ == '__main__':
         f.close()
 
         nicelog = str(chatlog(input, "de"))
+        stats = DirectoryStatistics.FileStatistics(input)
+        print str(stats)
 
         g = open(outfile, "w")
         g.write(nicelog)
@@ -226,29 +285,35 @@ if __name__ == '__main__':
 
 def handler(req):
 
-    # generate an index
-    if req.filename[-12:] == "logformat.py":
-        req.content_type = "application/xhtml+xml; charset=UTF8"
-        req.write(str(DirectoryListing(os.path.dirname(req.filename), "de")))
-        return apache.OK
-
+    mode = None
     if req.args != None:
         params = dict([part.split('=') for part in req.args.split('&')])
-        if 'mode' in params and params['mode'] == 'plain':
-            plain = True
+        if 'mode' in params:
+            mode = params['mode']
+
+    if req.filename[-12:] == "logformat.py":
+        if mode == 'stats':
+            # generate statistics
+            req.content_type = "text/plain; charset=UTF8"
+            req.write(str(DirectoryStatistics(os.path.dirname(req.filename))))
+            return apache.OK
         else:
-            plain = False
-    else:
-        plain = False
+            # generate an index
+            req.content_type = "application/xhtml+xml; charset=UTF8"
+            req.write(str(DirectoryListing(os.path.dirname(req.filename), "de")))
+            return apache.OK
 
     try:
         f = open(req.filename)
     except IOError:
         return apache.HTTP_NOT_FOUND
 
-    if plain:
+    if mode == 'plain':
         req.content_type = "text/plain; charset=UTF8"
         req.write(str(chatlog(f.read(),"de",plain=True)))
+    elif mode == 'stats':
+        req.content_type = "text/plain; charset=UTF8"
+        req.write(str(DirectoryStatistics.FileStatistics(f.read())))
     else:
         req.content_type = "application/xhtml+xml; charset=UTF8"
         req.write(str(chatlog(f.read(),"de",plain=False)))
