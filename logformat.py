@@ -208,8 +208,10 @@ class DirectoryStatistics:
         lines = 0
         dialoglines = 0
         datetime = None
+        json = False
 
-        def __init__(self, textlog):
+        def __init__(self, textlog, json=False):
+            self.json = json
             firstline = textlog.split("\n")[0]
             try:
                 locale.setlocale(locale.LC_ALL, "en_US.utf-8")
@@ -228,18 +230,25 @@ class DirectoryStatistics:
                     pass
 
         def __str__(self):
-            return time.strftime("%Y-%m-%d", self.datetime) + "\t" + str(self.lines) \
-                    + "\t" + str(self.dialoglines)
+            if self.json:
+                return "{ 'date':'" + time.strftime("%Y-%m-%d", self.datetime) \
+                        + "', 'lines':" + str(self.lines) + ", 'dialog':" \
+                        + str(self.dialoglines) + " }"
+            else:
+                return time.strftime("%Y-%m-%d", self.datetime) + "\t" \
+                        + str(self.lines) + "\t" + str(self.dialoglines)
 
     __l = []
-    def __init__(self, path):
+    json = False
+    def __init__(self, path, json=False):
+        self.json = json
         files = [l for l in os.listdir(path) if l[-4:] == ".log"]
         files.sort()
         for infile in files:
             f = open(os.path.join(path,infile), "r")
             input = f.read()
             f.close()
-            self.__l.append(self.FileStatistics(input))
+            self.__l.append(self.FileStatistics(input,json))
 
     def __getitem__(self,key):
         return self.__l[key]
@@ -251,9 +260,10 @@ class DirectoryStatistics:
         return iter(self.__l)
 
     def __str__(self):
-        result = ""
+        result = "[\n" if self.json else ""
         for stat in self:
-            result += str(stat) + "\n"
+            result += str(stat) + (", \n" if self.json else "\n")
+        if self.json: result += "]\n"
         return result
 
 
@@ -264,9 +274,9 @@ if __name__ == '__main__':
         g = open(outfile,"w")
         g.write(str(DirectoryListing(infile, "de")))
         g.close()
-        statfile = os.path.join(infile, "stats.txt")
+        statfile = os.path.join(infile, "stats.json")
         g = open(statfile,"w")
-        g.write(str(DirectoryStatistics(infile)))
+        g.write(str(DirectoryStatistics(infile,json=True)))
         g.close()
     else:
         outfile = infile + ".xhtml"
@@ -294,8 +304,8 @@ def handler(req):
     if req.filename[-12:] == "logformat.py":
         if mode == 'stats':
             # generate statistics
-            req.content_type = "text/plain; charset=UTF8"
-            req.write(str(DirectoryStatistics(os.path.dirname(req.filename))))
+            req.content_type = "application/json; charset=UTF8"
+            req.write(str(DirectoryStatistics(os.path.dirname(req.filename),json=True)))
             return apache.OK
         else:
             # generate an index
@@ -312,8 +322,8 @@ def handler(req):
         req.content_type = "text/plain; charset=UTF8"
         req.write(str(chatlog(f.read(),"de",plain=True)))
     elif mode == 'stats':
-        req.content_type = "text/plain; charset=UTF8"
-        req.write(str(DirectoryStatistics.FileStatistics(f.read())))
+        req.content_type = "application/json; charset=UTF8"
+        req.write(str(DirectoryStatistics.FileStatistics(f.read(),json=True)))
     else:
         req.content_type = "application/xhtml+xml; charset=UTF8"
         req.write(str(chatlog(f.read(),"de",plain=False)))
