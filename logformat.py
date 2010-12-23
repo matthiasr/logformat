@@ -205,7 +205,7 @@ class DirectoryListing:
 
 class DirectoryStatistics:
     class FileStatistics:
-        lines = 0
+        nondialoglines = 0
         dialoglines = 0
         datetime = None
         json = False
@@ -222,21 +222,22 @@ class DirectoryStatistics:
             locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
 
             for line in textlog.split("\n"):
-                self.lines += 1
                 try:
                     if line[6] == '<':
                         self.dialoglines += 1
+                    else:
+                        self.nondialoglines += 1
                 except IndexError:
                     pass
 
         def __str__(self):
             if self.json:
-                return "{ 'date':'" + time.strftime("%Y-%m-%d", self.datetime) \
-                        + "', 'lines':" + str(self.lines) + ", 'dialog':" \
-                        + str(self.dialoglines) + " }"
+                return "{ \"date\":\"" + time.strftime("%Y-%m-%d", self.datetime) \
+                        + "\", \"dialog\":" + str(self.dialoglines) \
+                        + ", \"non-dialog\":" + str(self.nondialoglines)  + " }"
             else:
-                return time.strftime("%Y-%m-%d", self.datetime) + "\t" \
-                        + str(self.lines) + "\t" + str(self.dialoglines)
+                return time.strftime("%Y-%m-%d", self.datetime) + "\t" + str(self.dialoglines) \
+                        + "\t" + str(self.nondialoglines)
 
     __l = []
     json = False
@@ -263,7 +264,7 @@ class DirectoryStatistics:
         result = "[\n" if self.json else ""
         for stat in self:
             result += str(stat) + (", \n" if self.json else "\n")
-        if self.json: result += "]\n"
+        if self.json: result = result[:-3] + "\n]\n"
         return result
 
 
