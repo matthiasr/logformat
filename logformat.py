@@ -239,9 +239,8 @@ class DirectoryStatistics:
                 return time.strftime("%Y-%m-%d", self.datetime) + "\t" + str(self.dialoglines) \
                         + "\t" + str(self.nondialoglines)
 
-    __l = []
-    json = False
     def __init__(self, path, json=False):
+        self.__l = []
         self.json = json
         files = [l for l in os.listdir(path) if l[-4:] == ".log"]
         files.sort()
