@@ -1,10 +1,15 @@
 AddHandler mod_python .log
-AddHandler mod_python .py
-DirectoryIndex "logformat.py"
+AddHandler mod_python .html
+AddHandler mod_python .json
+AddHandler mod_python .txt
+AddHandler mod_python .png
+AddHandler mod_python .svg
+DirectoryIndex "index.html"
 PythonHandler logformat 
+PythonHandler stats
 PythonDebug On
 
 Options +Indexes
 IndexOptions +FancyIndexing +FoldersFirst
-IndexIgnore logformat.py ln.sh screenshots css 
+IndexIgnore logformat.py stats.py screenshots css
 IndexOrderDefault Descending Name

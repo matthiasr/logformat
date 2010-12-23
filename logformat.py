@@ -60,7 +60,7 @@ class chatlog:
     <link rel="stylesheet" href="css/tango.css" title="Defaul-Stil" type="text/css"/>
 </head>
 <body>
-<a class="plaintextlink" href="?mode=plain">Plaintext</a><br />
+<a class="plaintextlink" href="''' + time.strftime("%Y-%m-%d",datetime)+".log" + '''">Plaintext</a><br />
 <label for="compact">
     <input type="checkbox" id="compact" onclick="save()"/> Compact
 </label>
@@ -193,8 +193,8 @@ class DirectoryListing:
         files.sort()
         files.reverse()
         for f in files:
-            self.listing += "<a href=\"" + f + "\">" + f[:-4] + "</a>"
-            self.listing += " (<a href=\"" + f + "?mode=plain\">plain</a>)"
+            self.listing += "<a href=\"" + os.path.splitext(f)[0]+".html" + "\">" + f[:-4] + "</a>"
+            self.listing += " (<a href=\"" + f + "\">plain</a>)"
             self.listing += "<br />\n"
 
         self.listing += """</body>
@@ -203,80 +203,13 @@ class DirectoryListing:
     def __str__(self):
         return self.listing
 
-class DirectoryStatistics:
-    class FileStatistics:
-        nondialoglines = 0
-        dialoglines = 0
-        datetime = None
-        json = False
-
-        def __init__(self, textlog, json=False):
-            self.json = json
-            firstline = textlog.split("\n")[0]
-            try:
-                locale.setlocale(locale.LC_ALL, "en_US.utf-8")
-                self.datetime = time.strptime(firstline[15:])
-            except ValueError:
-                locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
-                self.datetime = time.strptime(firstline[15:])
-            locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
-
-            for line in textlog.split("\n"):
-                try:
-                    if line[6] == '<':
-                        self.dialoglines += 1
-                    else:
-                        self.nondialoglines += 1
-                except IndexError:
-                    pass
-
-        def __str__(self):
-            if self.json:
-                return "{ \"date\":\"" + time.strftime("%Y-%m-%d", self.datetime) \
-                        + "\", \"dialog\":" + str(self.dialoglines) \
-                        + ", \"non-dialog\":" + str(self.nondialoglines)  + " }"
-            else:
-                return time.strftime("%Y-%m-%d", self.datetime) + "\t" + str(self.dialoglines) \
-                        + "\t" + str(self.nondialoglines)
-
-    def __init__(self, path, json=False):
-        self.__l = []
-        self.json = json
-        files = [l for l in os.listdir(path) if l[-4:] == ".log"]
-        files.sort()
-        for infile in files:
-            f = open(os.path.join(path,infile), "r")
-            input = f.read()
-            f.close()
-            self.__l.append(self.FileStatistics(input,json))
-
-    def __getitem__(self,key):
-        return self.__l[key]
-
-    def __len__(self):
-        return len(self.__l)
-
-    def __iter__(self):
-        return iter(self.__l)
-
-    def __str__(self):
-        result = "[\n" if self.json else ""
-        for stat in self:
-            result += str(stat) + (", \n" if self.json else "\n")
-        if self.json: result = result[:-3] + "\n]\n"
-        return result
-
 
 if __name__ == '__main__':
     infile = argv[1]
     if os.path.isdir(infile):
-        outfile = os.path.join(infile, "index.xhtml")
+        outfile = os.path.join(infile, "index.html")
         g = open(outfile,"w")
         g.write(str(DirectoryListing(infile, "de")))
-        g.close()
-        statfile = os.path.join(infile, "stats.json")
-        g = open(statfile,"w")
-        g.write(str(DirectoryStatistics(infile,json=True)))
         g.close()
     else:
         outfile = infile + ".xhtml"
@@ -294,41 +227,35 @@ if __name__ == '__main__':
         g.close()
 
 def handler(req):
+    def check_basename(n):
+        try:
+            time.strptime(n,"%Y-%m-%d")
+            return True
+        except ValueError:
+            return False
 
-    mode = None
-    if req.args != None:
-        params = dict([part.split('=') for part in req.args.split('&')])
-        if 'mode' in params:
-            mode = params['mode']
+    formats = { 'log':'text/plain; charset=UTF8', 'html':'xhtml+xml; charset=UTF8' }
+    basename, ext = os.path.splitext(os.path.basename(req.filename))
+    ext = ext[1:]
+    dirname = os.path.dirname(req.filename)
 
-    if req.filename[-12:] == "logformat.py":
-        if mode == 'stats':
-            # generate statistics
-            req.content_type = "application/json; charset=UTF8"
-            req.headers_out["Access-Control-Allow-Origin"] = '"*"'
-            req.write(str(DirectoryStatistics(os.path.dirname(req.filename),json=True)))
-            return apache.OK
-        else:
-            # generate an index
-            req.content_type = "application/xhtml+xml; charset=UTF8"
-            req.write(str(DirectoryListing(os.path.dirname(req.filename), "de")))
-            return apache.OK
-
-    try:
-        f = open(req.filename)
-    except IOError:
-        return apache.HTTP_NOT_FOUND
-
-    if mode == 'plain':
-        req.content_type = "text/plain; charset=UTF8"
-        req.write(str(chatlog(f.read(),"de",plain=True)))
-    elif mode == 'stats':
-        req.content_type = "application/json; charset=UTF8"
-        req.headers_out["Access-Control-Allow-Origin"] = '"*"'
-        req.write(str(DirectoryStatistics.FileStatistics(f.read(),json=True)))
-    else:
+    if basename == 'index' and ext == "html":
+        # generate an index
         req.content_type = "application/xhtml+xml; charset=UTF8"
-        req.write(str(chatlog(f.read(),"de",plain=False)))
-
-    f.close()
-    return apache.OK
+        req.write(str(DirectoryListing(dirname, "de")))
+        return apache.OK
+    elif check_basename(basename) and (ext in formats):
+        if ext == 'log':
+            plain = True
+        else:
+            plain = False
+        req.content_type = formats[ext]
+        try:
+            f = open(os.path.join(dirname, basename+".log"))
+        except IOError:
+            return apache.HTTP_NOT_FOUND
+        req.write(str(chatlog(f.read(),"de",plain=plain)))
+        f.close()
+        return apache.OK
+    else:
+        return apache.DECLINED
