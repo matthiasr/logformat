@@ -89,7 +89,7 @@ def handler(req):
         return apache.DECLINED
     else:
         req.content_type = formats[ext]
-        req.headers_out["Access-Control-Allow-Origin"] = '"*"'
+        req.headers_out["Access-Control-Allow-Origin"] = '*'
 
     if ext == "json":
         req.write(str(DirectoryStatistics(dirname,json=True)))
