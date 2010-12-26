@@ -13,3 +13,9 @@ Options +Indexes
 IndexOptions +FancyIndexing +FoldersFirst
 IndexIgnore logformat.py stats.py screenshots css
 IndexOrderDefault Descending Name
+
+RewriteEngine On
+RewriteBase <YOUR PATH HERE> # e.g. if this directory is available at http://example.com/foo/bar/... enter /foo/bar/
+RewriteCond %{QUERY_STRING} "!mode=plain"
+RewriteRule "^(.*)\.log$" "$1.html" [R=301,L]
+RewriteRule "^(.*)\.log$" "$1.txt?" [R=301,L]

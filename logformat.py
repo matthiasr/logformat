@@ -60,7 +60,7 @@ class chatlog:
     <link rel="stylesheet" href="css/tango.css" title="Defaul-Stil" type="text/css"/>
 </head>
 <body>
-<a class="plaintextlink" href="''' + time.strftime("%Y-%m-%d",datetime)+".log" + '''">Plaintext</a><br />
+<a class="plaintextlink" href="''' + time.strftime("%Y-%m-%d",datetime)+".txt" + '''">Plaintext</a><br />
 <label for="compact">
     <input type="checkbox" id="compact" onclick="save()"/> Compact
 </label>
@@ -194,7 +194,7 @@ class DirectoryListing:
         files.reverse()
         for f in files:
             self.listing += "<a href=\"" + os.path.splitext(f)[0]+".html" + "\">" + f[:-4] + "</a>"
-            self.listing += " (<a href=\"" + f + "\">plain</a>)"
+            self.listing += " (<a href=\"" + os.path.splitext(f)[0]+".txt"  + "\">plain</a>)"
             self.listing += "<br />\n"
 
         self.listing += """</body>
@@ -234,18 +234,18 @@ def handler(req):
         except ValueError:
             return False
 
-    formats = { 'log':'text/plain; charset=UTF8', 'html':'xhtml+xml; charset=UTF8' }
+    formats = { 'txt':'text/plain; charset=utf-8', 'html':'application/xhtml+xml; charset=utf-8' }
     basename, ext = os.path.splitext(os.path.basename(req.filename))
     ext = ext[1:]
     dirname = os.path.dirname(req.filename)
 
     if basename == 'index' and ext == "html":
         # generate an index
-        req.content_type = "application/xhtml+xml; charset=UTF8"
+        req.content_type = formats['html']
         req.write(str(DirectoryListing(dirname, "de")))
         return apache.OK
     elif check_basename(basename) and (ext in formats):
-        if ext == 'log':
+        if ext == 'txt':
             plain = True
         else:
             plain = False
