@@ -226,36 +226,3 @@ if __name__ == '__main__':
         g.write(nicelog)
         g.close()
 
-def handler(req):
-    def check_basename(n):
-        try:
-            time.strptime(n,"%Y-%m-%d")
-            return True
-        except ValueError:
-            return False
-
-    formats = { 'txt':'text/plain; charset=utf-8', 'html':'application/xhtml+xml; charset=utf-8' }
-    basename, ext = os.path.splitext(os.path.basename(req.filename))
-    ext = ext[1:]
-    dirname = os.path.dirname(req.filename)
-
-    if basename == 'index' and ext == "html":
-        # generate an index
-        req.content_type = formats['html']
-        req.write(str(DirectoryListing(dirname, "de")))
-        return apache.OK
-    elif check_basename(basename) and (ext in formats):
-        if ext == 'txt':
-            plain = True
-        else:
-            plain = False
-        req.content_type = formats[ext]
-        try:
-            f = open(os.path.join(dirname, basename+".log"))
-        except IOError:
-            return apache.HTTP_NOT_FOUND
-        req.write(str(chatlog(f.read(),"de",plain=plain)))
-        f.close()
-        return apache.OK
-    else:
-        return apache.DECLINED

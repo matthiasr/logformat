@@ -5,8 +5,7 @@ AddHandler mod_python .txt
 AddHandler mod_python .png
 AddHandler mod_python .svg
 DirectoryIndex "index.html"
-PythonHandler logformat 
-PythonHandler stats
+PythonHandler handler
 PythonDebug On
 
 Options +Indexes

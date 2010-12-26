@@ -72,52 +72,26 @@ class DirectoryStatistics:
         if self.json: result = result[:-3] + "\n]\n"
         return result
 
+    def graph(self, ext="svg"):
+        dates = [datetime.strptime(time.strftime("%Y-%m-%d", s.datetime),"%Y-%m-%d") for s in self]
+        dialog = [s.dialoglines for s in self]
+        total = [s.nondialoglines+s.dialoglines for s in self]
 
+        fig = Figure(figsize=(8,6))
+        ax = fig.add_subplot(1,1,1)
 
+        ax.plot_date(dates, total, linestyle='-', marker='', linewidth=0.5, color='black', label="Gesamt")
+        ax.plot_date(dates, dialog, linestyle='--', marker='', linewidth=0.5, color='black', label="Dialog")
 
+        ax.xaxis.set_major_locator(MonthLocator())
+        ax.xaxis.set_major_formatter(DateFormatter("%Y-%m"))
+        fig.autofmt_xdate()
+        ax.legend(prop={'size':'small'},loc=0)
+        ax.autoscale_view()
 
-def handler(req):
-    formats = { 'svg': 'image/svg+xml',
-            'png': 'image/png',
-            'json': 'application/json',
-            'txt': 'text/plain' }
-    basename, ext = os.path.splitext(os.path.basename(req.filename))
-    ext = ext[1:]
-    dirname = os.path.dirname(req.filename)
-
-    if not (basename == 'stats' and ext in formats):
-        return apache.DECLINED
-    else:
-        req.content_type = formats[ext]
-        req.headers_out["Access-Control-Allow-Origin"] = '*'
-
-    if ext == "json":
-        req.write(str(DirectoryStatistics(dirname,json=True)))
-        return apache.OK
-    elif ext == 'txt':
-        req.write(str(DirectoryStatistics(dirname,json=False)))
-        return apache.OK
-
-    stats = DirectoryStatistics(dirname,json=False)
-    dates = [datetime.strptime(time.strftime("%Y-%m-%d", s.datetime),"%Y-%m-%d") for s in stats]
-    dialog = [s.dialoglines for s in stats]
-    total = [s.nondialoglines+s.dialoglines for s in stats]
-
-    fig = Figure(figsize=(8,6))
-    ax = fig.add_subplot(1,1,1)
-
-    ax.plot_date(dates, total, linestyle='-', marker='', linewidth=0.5, color='black', label="Gesamt")
-    ax.plot_date(dates, dialog, linestyle='--', marker='', linewidth=0.5, color='black', label="Dialog")
-
-    ax.xaxis.set_major_locator(MonthLocator())
-    ax.xaxis.set_major_formatter(DateFormatter("%Y-%m"))
-    fig.autofmt_xdate()
-    ax.legend(prop={'size':'small'},loc=0)
-    ax.autoscale_view()
-
-    outf = StringIO()
-    canvas = FigureCanvasAgg(fig)
-    canvas.print_figure(outf,format=ext,dpi=300)
-    req.write(outf.getvalue())
-    outf.close()
-    return apache.OK
+        outf = StringIO()
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(outf,format=ext,dpi=300)
+        result = outf.getvalue()
+        outf.close()
+        return result
