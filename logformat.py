@@ -111,6 +111,13 @@ class chatlog:
             # remove hosts
             line = hosts_re.sub(r'\1 \2', line)
 
+            # remove erroneous spaces
+            try:
+                if line[6:8] == "< ":
+                    line = line[:7] + line[8:]
+            except IndexError:
+                pass
+
             # replace xml chars
             if not plain:
                 line = line.replace("&","&amp;")
@@ -129,13 +136,6 @@ class chatlog:
             else:
                 line = line.encode('ascii', 'xmlcharrefreplace')
                 line, count = chars_re.subn('',line)
-
-            # remove erroneous spaces
-            try:
-                if line[10] == " ":
-                    line = line[:10] + line[11:]
-            except IndexError:
-                pass
 
             if not plain:
                 # markup log time, add anchors, mark non-speak lines
