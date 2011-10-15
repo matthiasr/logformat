@@ -19,6 +19,9 @@ def read_htdigest_file(fname):
     f.close()
     return users
 
+def get_users(fname,realm):
+    return [u[0] for u in read_htdigest_file(fname) if u[1] == realm]
+
 def get_hash(fname,user,realm):
     users = read_htdigest_file(fname)
     for u in users:
@@ -101,5 +104,9 @@ def UserAdmin(req):
             New user name: <input type="text" name="newuser" /><br />
             <input type="submit" value="Create user" />
         </form>
+        <h2>Current users:</h2>
+        <ul>
+        <li>''' + '</li>\n<li>'.join(get_users(authfile,realm)) + '''</li>
+        </ul>
     </body>
 </html>'''
