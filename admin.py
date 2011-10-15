@@ -56,7 +56,11 @@ def UserAdmin(req):
             set_hash(authfile,req.user,realm,htdigest(req.user,realm,newpw))
             note = "Password updated"
     else:
-        note = ""
+        if req.is_https():
+            note = ""
+        else:
+            note = '''Warning: passwords will be transferred (but not stored) in plain text! Use
+<a href="https://''' + req.hostname + req.uri + '''">HTTPS</a>!'''
 
     return '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
