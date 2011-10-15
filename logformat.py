@@ -193,7 +193,7 @@ class DirectoryListing:
             self.listing += " (<a href=\"" + os.path.splitext(f)[0]+".txt"  + "\">plain</a>)"
             self.listing += "<br />\n"
 
-        self.listing += """</body>
+        self.listing += """<p><a href="admin.html">Change password</a></p></body>
 </html>"""
 
     def __str__(self):

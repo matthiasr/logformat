@@ -1,6 +1,7 @@
 from mod_python import apache
 from stats import DirectoryStatistics
 from logformat import chatlog, DirectoryListing
+from admin import UserAdmin
 import time
 import os
 
@@ -54,6 +55,9 @@ def handler(req):
         return apache.OK
     elif basename == "index" and ext == "html":
         req.write(str(DirectoryListing(dirname, "de")))
+        return apache.OK
+    elif basename == "admin" and ext == "html":
+        req.write(str(UserAdmin(req)))
         return apache.OK
     else:
         return apache.DECLINED

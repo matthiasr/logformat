@@ -13,8 +13,16 @@ IndexOptions +FancyIndexing +FoldersFirst
 IndexIgnore logformat.py stats.py screenshots css
 IndexOrderDefault Descending Name
 
+<Files ~ "\.(html|log|txt)$">
+AuthType Digest
+AuthName "#nodrama.de"
+AuthUserFile /var/www/2pktfkt/irc/nodrama.de/.htdigest
+AuthDigestDomain .
+require valid-user
+</Files>
+
 RewriteEngine On
-RewriteBase <YOUR PATH HERE> # e.g. if this directory is available at http://example.com/foo/bar/... enter /foo/bar/
+RewriteBase /irc/nodrama.de/
 RewriteCond %{QUERY_STRING} "!mode=plain"
 RewriteRule "^(.*)\.log$" "$1.html" [R=301,L]
 RewriteRule "^(.*)\.log$" "$1.txt?" [R=301,L]
