@@ -53,7 +53,10 @@ def UserAdmin(req):
         form = util.FieldStorage(req)
         newuser = form.getfirst('newuser')
         if newuser != None:
-            if create_user(authfile,newuser,realm,htdigest(newuser,realm,newpw)):
+            newuser = ''.join(c for c in newuser if c.islower())
+            if len(newuser) < 3:
+                note = "User name <em>" + newuser + "</em> is too short!"
+            elif create_user(authfile,newuser,realm,htdigest(newuser,realm,newpw)):
                 note = "Created new user <em>" + newuser + "</em> with password <em>" + newpw + "</em>"
             else:
                 note = "User " + newuser + " already exists."
