@@ -35,26 +35,43 @@ def set_hash(fname,user,realm,digest_hash):
         f.write(':'.join(u) + "\n")
     f.close()
 
+def create_user(fname,user,realm,digest_hash):
+    users = read_htdigest_file(fname)
+    for u in users:
+        if u[0] == user and u[1] == realm:
+            return False    # user exists
+    f = open(fname,'a')
+    f.write(':'.join((user,realm,digest_hash)) + "\n")
+    f.close()
+    return True
 
 def UserAdmin(req):
     authfile = os.path.join(os.path.dirname(req.filename), ".htdigest")
     realm = "#nodrama.de"
+    newpw = "niggurath"
     if req.method == "POST":
         form = util.FieldStorage(req)
-        oldpw = form.getfirst('oldpw')
-        newpw = form.getfirst('newpw')
-        newpw2 = form.getfirst('newpw2')
-        if oldpw == None:
-            note = "Please enter your old password!"
-        elif htdigest(req.user,realm,oldpw) != get_hash(authfile,req.user,realm):
-            note = "Incorrect password"
-        elif newpw == None:
-            note = "No new password supplied!"
-        elif newpw != newpw2:
-            note = "New passwords don't match!"
+        newuser = form.getfirst('newuser')
+        if newuser != None:
+            if create_user(authfile,newuser,realm,htdigest(newuser,realm,newpw)):
+                note = "Created new user <em>" + newuser + "</em> with password <em>" + newpw + "</em>"
+            else:
+                note = "User " + newuser + " already exists."
         else:
-            set_hash(authfile,req.user,realm,htdigest(req.user,realm,newpw))
-            note = "Password updated"
+            oldpw = form.getfirst('oldpw')
+            newpw = form.getfirst('newpw')
+            newpw2 = form.getfirst('newpw2')
+            if oldpw == None:
+                note = "Please enter your old password!"
+            elif htdigest(req.user,realm,oldpw) != get_hash(authfile,req.user,realm):
+                note = "Incorrect password"
+            elif newpw == None:
+                note = "No new password supplied!"
+            elif newpw != newpw2:
+                note = "New passwords don't match!"
+            else:
+                set_hash(authfile,req.user,realm,htdigest(req.user,realm,newpw))
+                note = "Password updated"
     else:
         if req.is_https():
             note = ""
@@ -76,6 +93,10 @@ def UserAdmin(req):
             New: <input type="password" name="newpw" /><br />
             Repeat: <input type="password" name="newpw2" /><br />
             <input type="submit" value="Change" />
+        </form>
+        <form name="createuser" action="''' + req.uri + '''" method="POST">
+            New user name: <input type="text" name="newuser" /><br />
+            <input type="submit" value="Create user" />
         </form>
     </body>
 </html>'''
