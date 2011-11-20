@@ -1,4 +1,3 @@
-from mod_python import apache
 from datetime import datetime
 import time
 import os

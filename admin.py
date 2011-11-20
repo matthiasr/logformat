@@ -1,5 +1,15 @@
-from mod_python import apache, util
-import os
+# XXX broken and untested.
+import os,sys
+
+def getdirname():
+    dirname = os.path.dirname(sys.argv[0])
+    if dirname == '':
+        dirname = '.'
+    return dirname
+
+
+authfile = os.path.join(getdirname(), ".htdigest")
+realm = "#nodrama.de"
 
 # HTTP Digest computation
 # from http://trac.edgewall.org/wiki/TracStandalone
@@ -48,43 +58,36 @@ def create_user(fname,user,realm,digest_hash):
     f.close()
     return True
 
-def UserAdmin(req):
-    authfile = os.path.join(os.path.dirname(req.filename), ".htdigest")
-    realm = "#nodrama.de"
+def admin_post(req):
     newpw = "niggurath"
-    if req.method == "POST":
-        form = util.FieldStorage(req)
-        newuser = form.getfirst('newuser')
-        if newuser != None:
-            newuser = ''.join(c for c in newuser if c.islower())
-            if len(newuser) < 3:
-                note = "User name <em>" + newuser + "</em> is too short!"
-            elif create_user(authfile,newuser,realm,htdigest(newuser,realm,newpw)):
-                note = "Created new user <em>" + newuser + "</em> with password <em>" + newpw + "</em>"
-            else:
-                note = "User " + newuser + " already exists."
+    newuser = req.forms.get('newuser')
+    if newuser != None:
+        newuser = ''.join(c for c in newuser if c.islower())
+        if len(newuser) < 3:
+            note = "User name <em>" + newuser + "</em> is too short!"
+        elif create_user(authfile,newuser,realm,htdigest(newuser,realm,newpw)):
+            note = "Created new user <em>" + newuser + "</em> with password <em>" + newpw + "</em>"
         else:
-            oldpw = form.getfirst('oldpw')
-            newpw = form.getfirst('newpw')
-            newpw2 = form.getfirst('newpw2')
-            if oldpw == None:
-                note = "Please enter your old password!"
-            elif htdigest(req.user,realm,oldpw) != get_hash(authfile,req.user,realm):
-                note = "Incorrect password"
-            elif newpw == None:
-                note = "No new password supplied!"
-            elif newpw != newpw2:
-                note = "New passwords don't match!"
-            else:
-                set_hash(authfile,req.user,realm,htdigest(req.user,realm,newpw))
-                note = "Password updated"
+            note = "User " + newuser + " already exists."
     else:
-        if req.is_https():
-            note = ""
+        oldpw = req.forms.getfirst('oldpw')
+        newpw = req.forms.getfirst('newpw')
+        newpw2 = req.forms.getfirst('newpw2')
+        if oldpw == None:
+            note = "Please enter your old password!"
+        elif htdigest(req.user,realm,oldpw) != get_hash(authfile,req.user,realm):
+            note = "Incorrect password"
+        elif newpw == None:
+            note = "No new password supplied!"
+        elif newpw != newpw2:
+            note = "New passwords don't match!"
         else:
-            note = '''Warning: passwords will be transferred (but not stored) in plain text! Use
-<a href="https://''' + req.hostname + req.uri + '''">HTTPS</a>!'''
+            set_hash(authfile,req.user,realm,htdigest(req.user,realm,newpw))
+            note = "Password updated"
+    return admin_page(req,note)
 
+def admin_page(user, url, note=""):
+    print get_users(authfile,realm)
     return '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de">
@@ -92,15 +95,15 @@ def UserAdmin(req):
         <title>Change password</title>
     </head>
     <body>
-        <h1>Change password for ''' + req.user + '''</h1>
+        <h1>Change password for ''' + user + '''</h1>
         <p>''' + note + '''</p>
-        <form name="pwchange" action="''' + req.uri + '''" method="POST">
+        <form name="pwchange" action="''' + url + '''" method="POST">
             Old: <input type="password" name="oldpw" /><br />
             New: <input type="password" name="newpw" /><br />
             Repeat: <input type="password" name="newpw2" /><br />
             <input type="submit" value="Change" />
         </form>
-        <form name="createuser" action="''' + req.uri + '''" method="POST">
+        <form name="createuser" action="''' + url + '''" method="POST">
             New user name: <input type="text" name="newuser" /><br />
             <input type="submit" value="Create user" />
         </form>
@@ -110,3 +113,4 @@ def UserAdmin(req):
         </ul>
     </body>
 </html>'''
+
