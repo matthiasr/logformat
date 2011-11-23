@@ -3,10 +3,9 @@ from logformat import chatlog, DirectoryListing
 #from admin import admin_page, admin_post, auth
 import time
 import os
-import sys
 
 def getdirname():
-    dirname = os.path.dirname(sys.argv[0])
+    dirname = os.path.dirname(__file__)
     if dirname == '':
         dirname = '.'
     return dirname
