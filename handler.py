@@ -44,4 +44,4 @@ def html_log(basename,path):
         response.status = 404
         return
 
-run(port=8000)
+run(bindAddress="/tmp/logformat.sock", server='flup')
