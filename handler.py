@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from bottle import get, request, response, static_file, run
 from logformat import chatlog, DirectoryListing
 #from admin import admin_page, admin_post, auth
