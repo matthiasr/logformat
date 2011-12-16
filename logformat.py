@@ -131,10 +131,10 @@ class chatlog:
                 line = unicode(line,'utf-8','strict')
             except UnicodeDecodeError:
                 line = unicode(line,'latin-1','strict')
-            if plain:
-                line = line.encode('utf-8')
-            else:
-                line = line.encode('ascii', 'xmlcharrefreplace')
+
+            line = line.encode('utf-8')
+            if not plain:
+                # WTF is this supposed to do?
                 line, count = chars_re.subn('',line)
 
             if not plain:
