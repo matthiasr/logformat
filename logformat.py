@@ -42,12 +42,12 @@ class chatlog:
 
         firstline = textlog.split("\n")[0]
         try:
-            locale.setlocale(locale.LC_ALL, "en_US.utf-8")
+            locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
             datetime = time.strptime(firstline[15:])
         except ValueError:
-            locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
+            locale.setlocale(locale.LC_ALL, "de_DE.UTF-8")
             datetime = time.strptime(firstline[15:])
-        locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
+        locale.setlocale(locale.LC_ALL, "de_DE.UTF-8")
 
         if not plain:
             self.log += '''<?xml version="1.0" encoding="UTF-8"?>

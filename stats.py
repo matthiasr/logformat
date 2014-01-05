@@ -19,12 +19,12 @@ class DirectoryStatistics:
             self.json = json
             firstline = textlog.split("\n")[0]
             try:
-                locale.setlocale(locale.LC_ALL, "en_US.utf-8")
+                locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
                 self.datetime = (time.strptime(firstline[15:]))
             except ValueError:
-                locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
+                locale.setlocale(locale.LC_ALL, "de_DE.UTF-8")
                 self.datetime = (time.strptime(firstline[15:]))
-            locale.setlocale(locale.LC_ALL, "de_DE.utf-8")
+            locale.setlocale(locale.LC_ALL, "de_DE.UTF-8")
 
             for line in textlog.split("\n"):
                 try:
