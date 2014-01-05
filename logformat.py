@@ -34,7 +34,6 @@ class chatlog:
         """
 
         # precompile regular expressions
-        hosts_re = re.compile(r'(^[0-9]{2}:[0-9]{2} [^<][^ (]*) \(.*@.*\) (has (joined|quit|left))')
         chars_re = re.compile(u'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]')
         uri_patterns = [ r'''((?<=\()\b[A-Za-z][A-Za-z0-9\+\.\-]*:([A-Za-z0-9\.\-_~:/\?#\[\]@!\$&'\(\)\*\+,;=]|%[A-Fa-f0-9]{2})+(?=\)))''', r'''((?<=&lt;)\b[A-Za-z][A-Za-z0-9\+\.\-]*:([A-Za-z0-9\.\-_~:/\?#\[\]@!\$&'\(\)\*\+,;=]|%[A-Fa-f0-9]{2})+(?=&gt;))''', r'''(?<!\()\b([A-Za-z][A-Za-z0-9\+\.\-]*:([A-Za-z0-9\.\-_~:/\?#\[\]@!\$&'\(\)\*\+,;=]|%[A-Fa-f0-9]{2})+)''', ]
         uri_res = [re.compile(p) for p in uri_patterns]
@@ -107,9 +106,6 @@ class chatlog:
         lastlineid = 1
 
         for lineid, line in enumerate(textlog.split("\n")):
-
-            # remove hosts
-            line = hosts_re.sub(r'\1 \2', line)
 
             # remove erroneous spaces
             try:
