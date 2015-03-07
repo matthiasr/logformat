@@ -1,0 +1,9 @@
+<% messages.each do |m| %>
+  <p>
+  <span class="<%= m.type %>-time"><%= h m.time %></span>
+  <span class="<%= m.type %>-nick"><%= h m.nick %></span>
+  <span class="<%= m.type %>-text"><%= h m.text %></span>
+  </p>
+<% end %>
+<a class="previous" href="<%= url "#{channel.slug}/#{(date-1).strftime('%Y-%m-%d')}" %>">Previous</a>
+<a class="next" href="<%= url "#{channel.slug}/#{(date+1).strftime('%Y-%m-%d')}" %>">Next</a>

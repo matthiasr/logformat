@@ -1,0 +1,5 @@
+<ul class="channel-list">
+<% channels.each do |c| %>
+  <li><a href="<%= url(c.slug) %>"><%= c.name %></a></li>
+<% end %>
+</ul>
