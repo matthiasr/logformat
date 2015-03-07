@@ -41,6 +41,14 @@ describe 'Log parser' do
     expect(m.text).to eql 'Ping timeout: 240 seconds'
   end
 
+  it 'accepts quit with -!-' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '22:04 -!- henry [n=henry@1.2.3.4] has quit [Remote closed the connection]')
+
+    expect(m.type).to eql 'quit'
+    expect(m.nick).to eql 'henry'
+    expect(m.text).to eql 'Remote closed the connection'
+  end
+
   it 'parses a leave' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '12:11  eve (~eve@example.com) has left #somechannel ()')
     expect(m.type).to eql 'leave'

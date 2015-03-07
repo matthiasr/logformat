@@ -8,7 +8,7 @@ module Logformat
       line_regex = /^([012][0-9]:[0-6][0-9]) <[ @]*([^>]+)> (.*)$/
       action_regex = /^([012][0-9]:[0-6][0-9]) +\* ([a-z0-9_\-\[\]\\^{}|`]+) (.*)$/i
       join_regex = /^([012][0-9]:[0-6][0-9]) +([a-z0-9_\-\[\]\\^{}|`]+) \(.*\) has joined /i
-      quit_regex = /^([012][0-9]:[0-6][0-9]) +([a-z0-9_\-\[\]\\^{}|`]+) \(.*\) has quit \((.*)\)$/i
+      quit_regex = /^([012][0-9]:[0-6][0-9]) (?:-!-)? ([a-z0-9_\-\[\]\\^{}|`]+) [\[(].*[\])] has quit [\[(](.*)[\])]$/i
       leave_regex = /^([012][0-9]:[0-6][0-9]) +([a-z0-9_\-\[\]\\^{}|`]+) \(.*\) has left (?:[#&][^\x07\x2C\s]+) \((.*)\)$/i
       kick_regex = /^([012][0-9]:[0-6][0-9]) +([a-z0-9_\-\[\]\\^{}|`]+) was kicked from (?:[#&][^\x07\x2C\s]+) by (?:([a-z0-9_\-\[\]\\^{}|`]+)) \((.*)\)$/i
       nickchange_regex = /^([012][0-9]:[0-6][0-9]) +([a-z0-9_\-\[\]\\^{}|`]+) is now known as ([a-z0-9_\-\[\]\\^{}|`]+)/i
@@ -69,7 +69,7 @@ module Logformat
       when ignore_regex
         return nil
       else
-        raise(ArgumentError, "Invalid line: #{line}")
+        raise(ArgumentError, "Invalid line at #{channel_name}, #{day}: #{line}")
       end
 
       # FIXME: DateTime assumes UTC, so all times will be interpreted as such
