@@ -71,6 +71,14 @@ describe 'Log parser' do
     expect(m.text).to eql ''
   end
 
+  it 'accepts nick change with -!-' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '22:14 -!- henry is now known as harry')
+
+    expect(m.type).to eql 'nick'
+    expect(m.nick).to eql 'henry'
+    expect(m.text).to eql 'harry'
+  end
+
   it 'parses a leave' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '12:11  eve (~eve@example.com) has left #somechannel ()')
     expect(m.type).to eql 'leave'
