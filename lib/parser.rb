@@ -14,7 +14,7 @@ module Logformat
       nickchange_regex = /^([012][0-9]:[0-6][0-9]) (?:-!-)? ?([a-z0-9_\-\[\]\\^{}|`]+) is now known as ([a-z0-9_\-\[\]\\^{}|`]+)/i
       notice_regex = /^([012][0-9]:[0-6][0-9]) -([a-z0-9_\-\[\]\\^{}|`.]+)(?:\|[#&][^\x07\x2C\s]+)?- (.*)$/i
       topic_regex = /^([012][0-9]:[0-6][0-9]) (?:-!-)? ?([a-z0-9_\-\[\]\\^{}|`.]+) changed the topic of [#&][^\x07\x2C\s]+ to: (.*)$/i
-      ignore_regex = /(?:^--- |^([012][0-9]:[0-6][0-9]) (?:-!-)? ?(?:Irssi:|Netsplit|mode\/|ServerMode\/|You're now known as))/
+      ignore_regex = /(?:^--- |^([012][0-9]:[0-6][0-9]) (?:-!-)? ?(?:Irssi:|Netsplit|mode\/|ServerMode\/|You're now known as| channels :))/
 
 
       unless line.valid_encoding?
