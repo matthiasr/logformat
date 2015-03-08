@@ -178,6 +178,12 @@ describe 'Log parser' do
     expect(Logformat::Message.count).to eql 0
   end
 
+  it 'ignores yet another kind of garbage' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '14:52 2 ~/logs/irssi/freenode/#twitter.de/%Y-%m-%d.log: #twitter.de (freenode) MSGS PUBLICS NOTICES SNOTES ACTIONS JOINS PARTS QUITS KICKS MODES TOPICS WALLOPS INVITES NICKS DCC DCCMSGS CLIENTNOTICES CLIENTERRORS HILIGHTS')
+    expect(m).to be_nil
+    expect(Logformat::Message.count).to eql 0
+  end
+
   it 'accepts changing to nicks starting with digits' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '16:46  some_nick is now known as 1nick')
     expect(m.type).to eql 'nick'
