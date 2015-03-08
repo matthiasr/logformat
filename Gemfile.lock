@@ -15,6 +15,7 @@ GEM
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
     method_source (0.8.2)
+    mysql2 (0.3.18)
     parallel (1.4.1)
     pg (0.18.1)
     pry (0.10.1)
@@ -62,6 +63,7 @@ PLATFORMS
 
 DEPENDENCIES
   cinch
+  mysql2
   parallel
   pg
   pry

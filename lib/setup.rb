@@ -2,7 +2,7 @@ require 'sequel'
 
 module Logformat
   Sequel.default_timezone = :utc
-  DB = Sequel.connect ENV['DB'] || 'sqlite://local.db'
+  DB = Sequel.connect(ENV['DB'] || 'sqlite://local.db', :max_connections => 100)
 
   unless DB.table_exists?(:messages)
     Sequel.extension :migration
