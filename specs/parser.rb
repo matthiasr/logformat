@@ -86,6 +86,20 @@ describe 'Log parser' do
     expect(m.text).to eql 'Skype ist naeher als aufstehen | Erweiterte Kanalhygiene im Effekt!'
   end
 
+  it 'accepts kick with -!-' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '15:02 -!- ingo was kicked from #somechannel by twolla [idle 1200 min]')
+    expect(m.type).to eql 'kick'
+    expect(m.nick).to eql 'ingo'
+    expect(m.text).to eql 'twolla'
+  end
+
+  it 'accepts leave with -!-' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '04:06 -!- king [n=king@example.com] has left #nodrama.de []')
+    expect(m.type).to eql 'leave'
+    expect(m.nick).to eql 'king'
+    expect(m.text).to eql ''
+  end
+
   it 'parses a leave' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '12:11  eve (~eve@example.com) has left #somechannel ()')
     expect(m.type).to eql 'leave'
