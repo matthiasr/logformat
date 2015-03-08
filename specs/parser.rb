@@ -173,4 +173,11 @@ describe 'Log parser' do
     expect(m.nick).to eql 'irc.example.com'
     expect(m.text).to eql 'the topic'
   end
+
+  it 'accepts an action with lots of space' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '03:49  *         lara sets topic to "something funny"')
+    expect(m.type).to eql 'action'
+    expect(m.nick).to eql 'lara'
+    expect(m.text).to eql 'sets topic to "something funny"'
+  end
 end
