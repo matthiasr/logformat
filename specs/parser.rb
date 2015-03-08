@@ -27,14 +27,28 @@ describe 'Log parser' do
     expect(m.text).to eql 'weder noch'
   end
 
-  it 'parses a join' do
+  it 'parses a join with single space' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '01:25 bob (~bo@example.com) has joined #somechannel')
     expect(m.type).to eql 'join'
     expect(m.nick).to eql 'bob'
     expect(m.text).to eql ''
   end
 
-  it 'parses a quit' do
+  it 'parses a join with double space' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '01:25  bob (~bo@example.com) has joined #somechannel')
+    expect(m.type).to eql 'join'
+    expect(m.nick).to eql 'bob'
+    expect(m.text).to eql ''
+  end
+
+  it 'parses a quit with single space' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '01:30 bob (~bo@example.com) has quit (Ping timeout: 240 seconds)')
+    expect(m.type).to eql 'quit'
+    expect(m.nick).to eql 'bob'
+    expect(m.text).to eql 'Ping timeout: 240 seconds'
+  end
+
+  it 'parses a quit with double space' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '01:30  bob (~bo@example.com) has quit (Ping timeout: 240 seconds)')
     expect(m.type).to eql 'quit'
     expect(m.nick).to eql 'bob'
