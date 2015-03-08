@@ -79,6 +79,13 @@ describe 'Log parser' do
     expect(m.text).to eql 'harry'
   end
 
+  it 'accepts topic change with -!-' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '03:57 -!- harry changed the topic of #twitter.de to: Skype ist naeher als aufstehen | Erweiterte Kanalhygiene im Effekt!')
+    expect(m.type).to eql 'topic'
+    expect(m.nick).to eql 'harry'
+    expect(m.text).to eql 'Skype ist naeher als aufstehen | Erweiterte Kanalhygiene im Effekt!'
+  end
+
   it 'parses a leave' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '12:11  eve (~eve@example.com) has left #somechannel ()')
     expect(m.type).to eql 'leave'
