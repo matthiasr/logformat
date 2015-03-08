@@ -49,6 +49,14 @@ describe 'Log parser' do
     expect(m.text).to eql 'Remote closed the connection'
   end
 
+  it 'accepts join with -!-' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '22:08 -!- henry [n=henry@1.2.3.4] has joined #somechannel')
+
+    expect(m.type).to eql 'join'
+    expect(m.nick).to eql 'henry'
+    expect(m.text).to eql ''
+  end
+
   it 'parses a leave' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '12:11  eve (~eve@example.com) has left #somechannel ()')
     expect(m.type).to eql 'leave'
