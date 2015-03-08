@@ -160,6 +160,12 @@ describe 'Log parser' do
     expect(Logformat::Message.count).to eql 0
   end
 
+  it 'ignores netsplits' do
+    m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '04:06 -!- Netsplit irc1.example.com <-> irc2.example.com quits: sonja')
+    expect(m).to be_nil
+    expect(Logformat::Message.count).to eql 0
+  end
+
   it 'accepts changing to nicks starting with digits' do
     m = Logformat::Message.parse_irssi_line('2016-10-15', '#somechannel', '16:46  some_nick is now known as 1nick')
     expect(m.type).to eql 'nick'
