@@ -5,6 +5,7 @@ group :database do
   gem 'sqlite3'
   gem 'pg'
   gem 'mysql2'
+  gem 'sequel_secure_password'
 end
 
 group :web do
