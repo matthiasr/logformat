@@ -1,5 +1,6 @@
 require_relative 'helper/setup'
 require_relative '../lib/models/channel'
+include Logformat
 
 describe 'channel' do
   it 'can be created' do
@@ -33,5 +34,37 @@ describe 'channel' do
   it 'only allows unique channel slugs' do
     expect(Logformat::Channel.create(:name => '#channel1', :slug => 'channel').slug). to eql 'channel'
     expect{Logformat::Channel.create(:name => '#channel2', :slug => 'channel')}.to raise_error Sequel::UniqueConstraintViolation
+  end
+
+  describe 'authorization' do
+    RSpec.configure do |config|
+      before(:example) do
+        load File.join(File.dirname(__FILE__), 'helper/authmatrix.rb')
+      end
+    end
+
+    it 'allows access if there is no rule' do
+      u = User.find(:name => 'user1')
+      c = Channel.find(:name => '#channel1')
+      expect(c.allowed?(u)).to be_truthy
+    end
+
+    it 'allows access if the rule allows it' do
+      u = User.find(:name => 'user1')
+      c = Channel.find(:name => '#channel2')
+      expect(c.allowed?(u)).to be_truthy
+    end
+
+    it 'denies access if the rule disallows it' do
+      u = User.find(:name => 'user2')
+      c = Channel.find(:name => '#channel1')
+      expect(c.allowed?(u)).to be_falsey
+    end
+
+    it 'allows access if the rule is explicitly set to default' do
+      u = User.find(:name => 'user2')
+      c = Channel.find(:name => '#channel2')
+      expect(c.allowed?(u)).to be_truthy
+    end
   end
 end

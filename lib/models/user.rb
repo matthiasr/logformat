@@ -1,9 +1,12 @@
 require_relative '../setup'
+require_relative 'permission'
 require 'rack/auth/basic'
 
 module Logformat
   class User<Sequel::Model
     plugin :secure_password
+
+    one_to_many :permission
 
     def self.anonymous
       self.find(:id => 0)
