@@ -25,6 +25,8 @@ GEM
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
     rb-fsevent (0.9.4)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
@@ -68,6 +70,7 @@ DEPENDENCIES
   pg
   pry
   rack (~> 1.5.2)
+  rack-test
   rerun
   rspec
   sequel

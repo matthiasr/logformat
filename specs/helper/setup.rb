@@ -1,4 +1,5 @@
 ENV['DB'] = 'sqlite://'
+ENV['RACK_ENV'] = 'test'
 
 require_relative '../../lib/setup'
 require 'rspec'

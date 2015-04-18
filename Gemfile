@@ -25,4 +25,5 @@ group :development do
   gem 'pry'
   gem 'rerun'
   gem 'rspec'
+  gem 'rack-test'
 end
