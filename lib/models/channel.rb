@@ -20,5 +20,21 @@ module Logformat
         p.rule == Permission::ALLOW
       end
     end
+
+    def deny!(user)
+      Permission.create(:channel => self, :user => user, :rule => Permission::DENY)
+    end
+
+    def deny_anonymous!
+      deny!(User.anonymous)
+    end
+
+    def allow!(user)
+      Permission.create(:channel => self, :user => user, :rule => Permission::ALLOW)
+    end
+
+    def allow_anonymous!
+      allow!(User.anonymous)
+    end
   end
 end
