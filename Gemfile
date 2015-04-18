@@ -26,4 +26,5 @@ group :development do
   gem 'rerun'
   gem 'rspec'
   gem 'rack-test'
+  gem 'rake'
 end
