@@ -4,6 +4,7 @@ require 'sinatra'
 require_relative '../lib/setup'
 require_relative '../lib/models/message'
 require_relative '../lib/models/channel'
+require_relative '../lib/models/user'
 include Logformat
 
 set :views, File.join(File.dirname(__FILE__),'..','views')
@@ -22,6 +23,10 @@ get '/' do
     :title => 'Logs',
     :channels => Channel.all,
   }
+end
+
+get '/-/whoami' do
+  User.from_env(request.env).name
 end
 
 get '/:channel/:date' do

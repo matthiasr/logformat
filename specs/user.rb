@@ -1,6 +1,7 @@
 require_relative 'helper/setup'
 require_relative '../lib/models/user'
 require 'bcrypt'
+require 'base64'
 
 describe Logformat::User do
   it 'has an anonymous user' do
@@ -16,5 +17,30 @@ describe Logformat::User do
     expect(u.name).to eql 'testuser'
     expect(u.authenticate('pass')).to eql u
     expect(u.authenticate('dunno')).to be_nil
+  end
+
+  describe 'authentication' do
+    RSpec.configure do |conf|
+      before(:example) do
+        User.create(:name => 'testuser', :password => 'testpass', :password_confirmation => 'testpass')
+      end
+    end
+
+    it 'returns anonymous on unauthenticated requests' do
+      expect(User.from_env({})).to eql User.anonymous
+    end
+
+    it 'returns the user on authenticated requests' do
+      expect(User.from_env({ 'HTTP_AUTHORIZATION' => 'Basic ' + Base64.encode64('testuser:testpass').chomp })).to eql User.find(:name => 'testuser')
+    end
+
+    it 'returns anonymous on requests with wrong password' do
+      expect(User.from_env({ 'HTTP_AUTHORIZATION' => 'Basic ' + Base64.encode64('testuser:wrongpass').chomp })).to eql User.anonymous
+    end
+
+    it 'returns anonymous on requests with unknown user' do
+      expect(User.from_env({ 'HTTP_AUTHORIZATION' => 'Basic ' + Base64.encode64('otheruser:anypass').chomp })).to eql User.anonymous
+    end
+
   end
 end
