@@ -55,11 +55,30 @@ get '/:channel/:date' do
   end
 end
 
-# XXX should be date picker
+# NOTE: this is quite expensive (sequential scan on messages)
 get '/:channel' do
-  status 404
-  erb :error, :locals => {
-    :title => 'Logs: Not implemented',
-    :text => 'There will be a date picker here some day.',
-  }
+  channel = Channel.find(:slug => params[:channel])
+  if channel.nil?
+    status 404
+    erb :error, :locals => {
+      :title => 'Logs: Not found',
+      :text => 'No such channel',
+    }
+  else
+    erb :channel_days, :locals => {
+      :title => "Logs for #{channel.name}",
+      :channel => channel,
+      :days => Message
+        .filter(:channel => channel)
+        .select(
+          Sequel.as(
+            Sequel.function(:date, :time),
+            :date
+          )
+        )
+        .group(:date)
+        .order(Sequel.desc(:date))
+        .map(:date)
+    }
+  end
 end

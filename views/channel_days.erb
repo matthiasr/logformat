@@ -1,0 +1,6 @@
+<ul>
+<% days.each do |d| %>
+  <% dd = d.kind_of?(String) ? d : d.strftime('%Y-%m-%d') # with SQLite this is already a string %>
+  <li><a class="day" href="<%= url "#{channel.slug}/#{dd}" %>"><%= dd %></a></li>
+<% end %>
+</ul>

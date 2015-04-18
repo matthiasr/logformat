@@ -36,13 +36,11 @@ describe 'web frontend' do
 
   describe 'channel page' do
     it 'is rendered' do
-      skip 'not implemented'
       get '/testchannel'
       expect(last_response).to be_ok
     end
 
     it 'has a link to the day with messages' do
-      skip 'not implemented'
       get '/testchannel'
       expect(last_response).to match(/href="http:\/\/example.org\/testchannel\/2014-10-10"/)
     end
