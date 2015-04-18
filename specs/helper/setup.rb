@@ -1,4 +1,4 @@
-ENV['DB'] = 'sqlite://'
+ENV['DB'] = 'sqlite:///'
 ENV['RACK_ENV'] = 'test'
 
 require_relative '../../lib/setup'
