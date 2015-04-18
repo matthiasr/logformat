@@ -17,7 +17,7 @@ module Logformat
       u = nil
       if @auth.provided? && @auth.basic?
         candidate = User.find(:name => @auth.username)
-        unless candidate.nil?
+        unless candidate.nil? || candidate == User.anonymous
           u = candidate.authenticate(@auth.credentials[1])
         end
       end

@@ -4,10 +4,10 @@ require_relative '../../lib/models/permission'
 include Logformat
 
 # Test access matrix
-#   | u1 | u2
-# --|----|----
-# c1| ?  | N
-# c2| Y  | D
+#   | u1 | u2 | anon
+# --|----|----|------
+# c1| ?  | N  | ?
+# c2| Y  | D  | D
 #
 # where ? = no rule, D = DEFAULT rule, Y = allowed, N = not allowed
 
@@ -18,3 +18,4 @@ c2 = Channel.create(:name => '#channel2')
 Permission.create(:user => u1, :channel => c2, :rule => Permission::ALLOW)
 Permission.create(:user => u2, :channel => u1, :rule => Permission::DENY)
 Permission.create(:user => u2, :channel => c2, :rule => Permission::DEFAULT)
+Permission.create(:user => User.anonymous, :channel => c2, :rule => Permission::DENY)

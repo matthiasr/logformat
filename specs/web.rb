@@ -71,6 +71,48 @@ describe 'web frontend' do
     end
   end
 
+  describe 'authorization' do
+    RSpec.configure do |conf|
+      before(:example) do
+        load File.join(File.dirname(__FILE__), 'helper', 'authmatrix.rb')
+      end
+    end
+
+    it 'allows anonymous access where there is no rule' do
+      get '/channel1/2014-10-10'
+      expect(last_response).to be_ok
+    end
+
+    it 'disallows anonymous access if rule forbids it' do
+      get '/channel2/2014-10-10'
+      expect(last_response.status).to eql 401
+    end
+
+    it 'allows access for authorized user where rule allows it' do
+      authorize 'user1', 'pass1'
+      get '/channel2/2014-10-10'
+      expect(last_response).to be_ok
+    end
+
+    it 'lets users with invalid passwords access channels anonymous may' do
+      authorize 'user1', 'wrong1'
+      get '/channel1/2014-10-10'
+      expect(last_response).to be_ok
+    end
+
+    it 'denies access for user with invalid password when it is denied for anonymous' do
+      authorize 'user1', 'wrong1'
+      get '/channel2/2014-10-10'
+      expect(last_response.status).to eql 401
+    end
+
+    it 'allows any password for user anonymous' do
+      authorize 'anonymous', 'any password'
+      get '/channel1/2014-10-10'
+      expect(last_response).to be_ok
+    end
+  end
+
   describe 'status endpoint' do
     describe '/-/whoami' do
       it 'returns anonymous on unauthenticated requests' do

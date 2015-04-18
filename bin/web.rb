@@ -40,6 +40,7 @@ get '/:channel/:date' do
     }
   end
 
+  user = User.from_env(request.env)
   channel = Channel.find(:slug => params[:channel])
   if channel.nil?
     status 404
@@ -48,20 +49,26 @@ get '/:channel/:date' do
       :text => 'No such channel',
     }
   else
-    erb :channel, :locals => {
-      :title => "Logs for #{channel.name}, #{date.strftime('%Y-%m-%d')}",
-      :messages => Message
-        .filter(:channel => channel)
-        .where(['time BETWEEN ? AND ?', date, date+1])
-        .order(:time, :id),
-      :date => date,
-      :channel => channel,
-    }
+    if channel.allowed?(user)
+      erb :channel, :locals => {
+        :title => "Logs for #{channel.name}, #{date.strftime('%Y-%m-%d')}",
+        :messages => Message
+          .filter(:channel => channel)
+          .where(['time BETWEEN ? AND ?', date, date+1])
+          .order(:time, :id),
+        :date => date,
+        :channel => channel,
+      }
+    else
+      status 401
+      headers['WWW-Authenticate'] = 'Basic realm="Logformat"'
+    end
   end
 end
 
 # NOTE: this is quite expensive (sequential scan on messages)
 get '/:channel' do
+  user = User.from_env(request.env)
   channel = Channel.find(:slug => params[:channel])
   if channel.nil?
     status 404
@@ -70,20 +77,25 @@ get '/:channel' do
       :text => 'No such channel',
     }
   else
-    erb :channel_days, :locals => {
-      :title => "Logs for #{channel.name}",
-      :channel => channel,
-      :days => Message
-        .filter(:channel => channel)
-        .select(
-          Sequel.as(
-            Sequel.function(:date, :time),
-            :date
+    if channel.allowed?(user)
+      erb :channel_days, :locals => {
+        :title => "Logs for #{channel.name}",
+        :channel => channel,
+        :days => Message
+          .filter(:channel => channel)
+          .select(
+            Sequel.as(
+              Sequel.function(:date, :time),
+              :date
+            )
           )
-        )
-        .group(:date)
-        .order(Sequel.desc(:date))
-        .map(:date)
-    }
+          .group(:date)
+          .order(Sequel.desc(:date))
+          .map(:date)
+      }
+    else
+      status 401
+      headers['WWW-Authenticate'] = 'Basic realm="Logformat"'
+    end
   end
 end
