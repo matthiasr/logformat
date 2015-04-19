@@ -126,6 +126,15 @@ describe 'web frontend' do
   end
 
   describe 'status endpoint' do
+    describe '/-/health' do
+      it 'returns ok' do
+        get '/-/health'
+        expect(last_response).to be_ok
+        expect(last_response.body).to eql 'OK'
+        expect(last_response.headers['Content-Type']).to eql "text/plain;encoding=utf-8, charset=utf-8"
+      end
+    end
+
     describe '/-/whoami' do
       it 'returns anonymous on unauthenticated requests' do
         get '/-/whoami'

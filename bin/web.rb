@@ -51,6 +51,11 @@ get '/-/whoami' do
   User.from_env(request.env).name
 end
 
+get '/-/health' do
+  content_type :text, :encoding => 'utf-8'
+  'OK'
+end
+
 get '/:channel/:date' do
   channel = check_channel_access!
 
