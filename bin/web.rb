@@ -35,6 +35,9 @@ helpers do
   end
 end
 
+before do
+  content_type :html, :encoding => 'utf-8'
+end
 
 get '/' do
   erb :channel_list, :locals => {
@@ -44,6 +47,7 @@ get '/' do
 end
 
 get '/-/whoami' do
+  content_type :text, :encoding => 'utf-8'
   User.from_env(request.env).name
 end
 
