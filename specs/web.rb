@@ -56,6 +56,11 @@ describe 'web frontend' do
       expect(last_response.headers['Content-Type']).to eql "text/html;charset=utf-8"
     end
 
+    it 'is not rendered for invalid dates' do
+      get '/testchannel/notadate'
+      expect(last_response).to be_bad_request
+    end
+
     it 'contains next and previous day links' do
       get '/testchannel/2014-10-10'
       expect(last_response).to match(/href="http:\/\/example.org\/testchannel\/2014-10-09"/)

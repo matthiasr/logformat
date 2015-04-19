@@ -33,6 +33,17 @@ helpers do
       end
     end
   end
+
+  def parse_date
+    begin
+      DateTime.strptime(params[:date], '%Y-%m-%d')
+    rescue ArgumentError => e
+      halt 400, erb(:error, :locals => {
+        :title => "Logs: Invalid Date",
+        :text => "Invalid date",
+      })
+    end
+  end
 end
 
 before do
@@ -59,15 +70,7 @@ end
 get '/:channel/:date' do
   channel = check_channel_access!
 
-  begin
-    date = DateTime.strptime(params[:date], '%Y-%m-%d')
-  rescue ArgumentError => e
-    status 400
-    return erb :error, :locals => {
-      :title => "Logs: Invalid Date",
-      :text => "Invalid date",
-    }
-  end
+  date = parse_date
 
   erb :channel, :locals => {
     :title => "Logs for #{channel.name}, #{date.strftime('%Y-%m-%d')}",
