@@ -64,6 +64,17 @@ get '/-/health' do
   'OK'
 end
 
+get '/:channel/:date.txt' do
+  content_type :txt
+  channel = check_channel_access!
+  date = parse_date
+
+  channel
+    .messages_for_day(date)
+    .map { |m| m.to_s }
+    .join("\n")
+end
+
 get '/:channel/:date' do
   content_type :html
   channel = check_channel_access!

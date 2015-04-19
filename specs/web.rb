@@ -79,6 +79,30 @@ describe 'web frontend' do
     end
   end
 
+
+  describe 'plaintext day page' do
+    it 'is rendered' do
+      get '/testchannel/2014-10-10.txt'
+      expect(last_response).to be_ok
+      expect(last_response.content_type).to eql 'text/plain;charset=utf-8'
+    end
+
+    it 'is not rendered for invalid dates' do
+      get '/testchannel/notadate.txt'
+      expect(last_response).to be_bad_request
+    end
+
+    it 'shows the message' do
+      get '/testchannel/2014-10-10.txt'
+      expect(last_response.body).to eql '[2014-10-10 10:34:56 UTC] : <nickname> message 1'
+    end
+
+    it 'does not show the message on a different day' do
+      get '/testchannel/2014-10-09.txt'
+      expect(last_response.body).to eql ''
+    end
+  end
+
   describe 'authorization' do
     RSpec.configure do |conf|
       before(:example) do
