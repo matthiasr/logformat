@@ -36,7 +36,7 @@ helpers do
 end
 
 before do
-  content_type :html, :encoding => 'utf-8'
+  content_type :html
 end
 
 get '/' do

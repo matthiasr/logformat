@@ -26,7 +26,7 @@ describe 'web frontend' do
       get '/'
 
       expect(last_response).to be_ok
-      expect(last_response.headers['Content-Type']).to eql "text/html;encoding=utf-8, charset=utf-8"
+      expect(last_response.headers['Content-Type']).to eql "text/html;charset=utf-8"
     end
 
     it 'lists channels' do
@@ -40,7 +40,7 @@ describe 'web frontend' do
     it 'is rendered' do
       get '/testchannel'
       expect(last_response).to be_ok
-      expect(last_response.headers['Content-Type']).to eql "text/html;encoding=utf-8, charset=utf-8"
+      expect(last_response.headers['Content-Type']).to eql "text/html;charset=utf-8"
     end
 
     it 'has a link to the day with messages' do
@@ -53,7 +53,7 @@ describe 'web frontend' do
     it 'is rendered' do
       get '/testchannel/2014-10-10'
       expect(last_response).to be_ok
-      expect(last_response.headers['Content-Type']).to eql "text/html;encoding=utf-8, charset=utf-8"
+      expect(last_response.headers['Content-Type']).to eql "text/html;charset=utf-8"
     end
 
     it 'contains next and previous day links' do
