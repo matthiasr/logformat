@@ -66,5 +66,11 @@ describe 'channel' do
       c = Channel.find(:name => '#channel2')
       expect(c.allowed?(u)).to be_truthy
     end
+
+    it 'denies access to user without explicit rule if access is denied for anonymous' do
+      u = User.find(:name => 'user2')
+      c = Channel.find(:name => '#channel3')
+      expect(c.allowed?(u)).to be_falsy
+    end
   end
 end

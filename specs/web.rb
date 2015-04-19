@@ -106,6 +106,12 @@ describe 'web frontend' do
       expect(last_response.status).to eql 401
     end
 
+    it 'denies access for user without rule if denied for anonymous' do
+      authorize 'user2', 'pass2'
+      get '/channel3/2014-10-10'
+      expect(last_response.status).to eql 401
+    end
+
     it 'allows any password for user anonymous' do
       authorize 'anonymous', 'any password'
       get '/channel1/2014-10-10'

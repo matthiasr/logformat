@@ -12,13 +12,19 @@ module Logformat
       self.slug ||= self.name[1..-1]
     end
 
-    def allowed?(user)
+    def permission(user)
       p = Permission.find(:user => user, :channel => self)
-      if p.nil?
-        Permission::DEFAULT == Permission::ALLOW
+      if p.nil? && user == User.anonymous
+        Permission::DEFAULT
+      elsif p.nil?
+        permission(User.anonymous)
       else
-        p.rule == Permission::ALLOW
+        p.rule
       end
+    end
+
+    def allowed?(user)
+      permission(user) == Permission::ALLOW
     end
 
     def deny!(user)
