@@ -72,10 +72,7 @@ get '/:channel/:date' do
 
   erb :channel, :locals => {
     :title => "Logs for #{channel.name}, #{date.strftime('%Y-%m-%d')}",
-    :messages => Message
-      .filter(:channel => channel)
-      .where(['time BETWEEN ? AND ?', date, date+1])
-      .order(:time, :id),
+    :messages => channel.messages_for_day(date),
     :date => date,
     :channel => channel,
   }

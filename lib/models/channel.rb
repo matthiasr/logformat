@@ -42,5 +42,12 @@ module Logformat
     def allow_anonymous!
       allow!(User.anonymous)
     end
+
+    def messages_for_day(date)
+      Message
+        .filter(:channel => self)
+        .where(['time BETWEEN ? AND ?', date, date+1])
+        .order(:time, :id)
+    end
   end
 end
