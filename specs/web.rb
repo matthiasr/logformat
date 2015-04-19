@@ -86,6 +86,7 @@ describe 'web frontend' do
     it 'disallows anonymous access if rule forbids it' do
       get '/channel2/2014-10-10'
       expect(last_response.status).to eql 401
+      expect(last_response.headers['WWW-Authenticate']).to eql 'Basic realm="Logs for #channel2"'
     end
 
     it 'allows access for authorized user where rule allows it' do
@@ -104,12 +105,14 @@ describe 'web frontend' do
       authorize 'user1', 'wrong1'
       get '/channel2/2014-10-10'
       expect(last_response.status).to eql 401
+      expect(last_response.headers['WWW-Authenticate']).to eql 'Basic realm="Logs for #channel2"'
     end
 
     it 'denies access for user without rule if denied for anonymous' do
       authorize 'user2', 'pass2'
       get '/channel3/2014-10-10'
       expect(last_response.status).to eql 401
+      expect(last_response.headers['WWW-Authenticate']).to eql 'Basic realm="Logs for #channel3"'
     end
 
     it 'allows any password for user anonymous' do

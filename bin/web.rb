@@ -28,7 +28,7 @@ helpers do
       if channel.allowed?(user)
         channel
       else
-        headers['WWW-Authenticate'] = 'Basic realm="Logformat"'
+        headers['WWW-Authenticate'] = "Basic realm=\"Logs for #{channel.name}\""
         halt 401
       end
     end
