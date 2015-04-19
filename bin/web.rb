@@ -46,11 +46,8 @@ helpers do
   end
 end
 
-before do
-  content_type :html
-end
-
 get '/' do
+  content_type :html
   erb :channel_list, :locals => {
     :title => 'Logs',
     :channels => Channel.all,
@@ -68,6 +65,7 @@ get '/-/health' do
 end
 
 get '/:channel/:date' do
+  content_type :html
   channel = check_channel_access!
 
   date = parse_date
@@ -85,6 +83,7 @@ end
 
 # NOTE: this is quite expensive (sequential scan on messages)
 get '/:channel' do
+  content_type :html
   channel = check_channel_access!
   erb :channel_days, :locals => {
     :title => "Logs for #{channel.name}",
