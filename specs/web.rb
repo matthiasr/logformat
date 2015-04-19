@@ -136,7 +136,7 @@ describe 'web frontend' do
         get '/-/health'
         expect(last_response).to be_ok
         expect(last_response.body).to eql 'OK'
-        expect(last_response.content_type).to eql "text/plain;encoding=utf-8, charset=utf-8"
+        expect(last_response.content_type).to eql "text/plain;charset=utf-8"
       end
     end
 
@@ -145,7 +145,7 @@ describe 'web frontend' do
         get '/-/whoami'
         expect(last_response).to be_ok
         expect(last_response.body).to eql 'anonymous'
-        expect(last_response.content_type).to eql "text/plain;encoding=utf-8, charset=utf-8"
+        expect(last_response.content_type).to eql "text/plain;charset=utf-8"
       end
 
       it 'returns username on successful authentication' do

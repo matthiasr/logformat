@@ -58,12 +58,12 @@ get '/' do
 end
 
 get '/-/whoami' do
-  content_type :text, :encoding => 'utf-8'
+  content_type :text
   User.from_env(request.env).name
 end
 
 get '/-/health' do
-  content_type :text, :encoding => 'utf-8'
+  content_type :text
   'OK'
 end
 
