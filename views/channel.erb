@@ -1,5 +1,7 @@
-<% messages.each do |m| %>
+<% messages.each_with_index do |m, legacy_id| %>
   <p>
+  <a id="m<%= m.id %>" href="#m<%= m.id %>">#</a>
+  <a id="<%= legacy_id + 2 %>" />
   <span class="<%= m.type %>-time"><%= h m.time %></span>
   <span class="<%= m.type %>-nick"><%= h m.nick %></span>
   <span class="<%= m.type %>-text"><%= h m.text %></span>

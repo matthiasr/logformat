@@ -73,6 +73,12 @@ describe 'web frontend' do
       expect(last_response).to match(/message 1/)
     end
 
+    it 'has legacy and new style ids for lines' do
+      get '/testchannel/2014-10-10'
+      expect(last_response).to match(/id="2"/)
+      expect(last_response).to match(/id="m1"/)
+    end
+
     it 'does not show the message on a different day' do
       get '/testchannel/2014-10-09'
       expect(last_response).not_to match(/message 1/)
