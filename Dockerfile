@@ -11,7 +11,7 @@ RUN apk add --update -t build-deps openssl ca-certificates make gcc g++ musl-dev
     && apk add ruby ruby-dev libgcc \
     && echo 'gem: --no-rdoc --no-ri' >> "$HOME/.gemrc" \
     && gem install bundler --no-document \
-    && bundle install --deployment --binstubs \
+    && bundle install --deployment --binstubs --local \
     && apk del --purge build-deps \
     && apk add mariadb-libs sqlite-libs libpq libffi \
     && rm -rf /var/cache/apk/*
