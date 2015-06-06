@@ -35,7 +35,8 @@ A simplistic script to dump the whole database in plain text format. Note that t
 Runtime configuration is performed through environment variables. These are:
 
 * `DB`: URI for database access, e.g. `postgres://user:pass@localhost/database`. Default: `sqlite://local.db` (i.e. the `local.db` file in the current directory).
-* `PORT`: listen port for the web component. The web component will only listen on the local interface, use a web server like [nginx](http://nginx.org) to proxy. See below for a configuration example.
+* `PORT`: listen port for the web component. The web component will by default only listen on the local interface, use a web server like [nginx](http://nginx.org) to proxy. See below for a configuration example.
+* `BIND`: interface to bind to. Set to `0.0.0.0` to bind to all interfaces. Default: `127.0.0.1`
 * `SERVER`: IRC server to connect to. Default: `irc.freenode.net`
 * `NICK`: Nickname to connect with. Default: `logformat`
 
@@ -73,3 +74,7 @@ To create a user and allow access to the channel for them,
 user = User.create(:name => 'joe', :password => 'password', :password_confirmation => 'password')
 channel.allow!(user)
 ```
+
+# Docker
+
+Pre-built Docker images are [available](https://registry.hub.docker.com/u/matthiasr/logformat/). When running, you most likely want to set the `DB` environment variable. Commands are run in the correct bundler context. The default command is `web.rb`.
