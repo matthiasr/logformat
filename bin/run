@@ -1,0 +1,8 @@
+#!/bin/sh
+
+CURDIR=$(cd $(dirname "$0"); pwd)
+
+PATH="${CURDIR}:${PATH}"
+export PATH
+
+exec bundle exec "$@"
