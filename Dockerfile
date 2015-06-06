@@ -4,8 +4,11 @@ WORKDIR /srv/app
 COPY . /srv/app
 EXPOSE 8080
 
-RUN apk add --update -t build-deps openssl ca-certificates make gcc g++ musl-dev libgcc mariadb-dev postgresql-dev sqlite-dev libffi-dev \
-    && apk add ruby ruby-dev \
+ENV RACK_ENV production
+ENV BIND 0.0.0.0
+
+RUN apk add --update -t build-deps openssl ca-certificates make gcc g++ musl-dev mariadb-dev postgresql-dev sqlite-dev libffi-dev \
+    && apk add ruby ruby-dev libgcc \
     && echo 'gem: --no-rdoc --no-ri' >> "$HOME/.gemrc" \
     && gem install bundler --no-document \
     && bundle install --deployment --binstubs \

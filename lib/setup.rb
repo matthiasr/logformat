@@ -13,4 +13,5 @@ module Logformat
   IRC_NICK = ENV['NICK'] || 'logformat'
 
   WEB_PORT = ENV['PORT'] || 8080
+  WEB_BIND = ENV['BIND'] || '127.0.0.1'
 end
