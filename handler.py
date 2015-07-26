@@ -44,4 +44,4 @@ def html_log(basename,path):
         response.status = 404
         return
 
-run()
+run(host='0.0.0.0',port=8080)

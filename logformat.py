@@ -5,12 +5,12 @@
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 3 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -55,7 +55,7 @@ class chatlog:
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="''' + language + '''">
 <head>
     <title>Log für ''' + time.strftime("%A, den %d. %B %Y", datetime) + '''</title>
-    <link rel="stylesheet" href="css/tango.css" title="Defaul-Stil" type="text/css"/>
+    <link rel="stylesheet" href="/css/tango.css" title="Defaul-Stil" type="text/css"/>
 </head>
 <body>
 <a class="plaintextlink" href="''' + time.strftime("%Y-%m-%d",datetime)+".txt" + '''">Plaintext</a><br />
@@ -139,7 +139,7 @@ class chatlog:
                     int(line[:2])
                     int(line[3:5])
                     line = '<span class="time">' + line[:5] + '</span>' + line[5:]
-        
+
                     if line[32:36] == "&lt;":
                         line = '<a class="line-marker" href="#' + str(lineid) + '">#</a><span class="line dialog" id="' + str(lineid) + '">' + line + '</span>'
                     else:
@@ -176,7 +176,7 @@ class DirectoryListing:
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="''' + language + '''">
 <head>
     <title>Logs</title>
-    <link rel="stylesheet" href="css/tango.css" title="Defaul-Stil" type="text/css"/>
+    <link rel="stylesheet" href="/css/tango.css" title="Defaul-Stil" type="text/css"/>
 </head>
 <body>
 '''
