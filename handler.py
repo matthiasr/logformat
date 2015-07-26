@@ -7,7 +7,7 @@ import os
 
 def getdirname(path):
     # FIXME: determine automatically
-    return os.path.join('/srv/www/logs',path.lstrip('/'))
+    return os.path.join('/srv/irc/logs',path.lstrip('/'))
 
 @get('<path:path>/css/<filename:path>')
 def static_css(filename,path):
