@@ -9,4 +9,6 @@ COPY css/ /srv/app/css/
 
 RUN echo 'en_US UTF-8' >> /etc/locale.gen && echo 'de_DE UTF-8' >> /etc/locale.gen && apt-get update && apt-get -y install locales && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ENV LANG en_US.UTF-8
+
 CMD [ "python", "./handler.py" ]
