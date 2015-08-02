@@ -15,10 +15,10 @@ end
 
 basedir = ARGV[0]
 
-channel_dirs = Dir.glob(File.join(basedir, '#*'))
+channel_dirs = Dir.glob(File.join(basedir, '*'))
 
 channel_dirs.each do |dir|
-  channel_name = File.basename(dir)
+  channel_name = '#' + File.basename(dir)
   Channel.find_or_create(:name => channel_name)
 
   log_files = Dir.glob(File.join(dir, '????-??-??.log')).sort
