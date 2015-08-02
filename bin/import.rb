@@ -6,6 +6,8 @@ include Logformat
 
 Sequel.application_timezone = :local
 
+THREADS=1
+
 if ARGV.size != 1
   puts "Usage: import.rb logs/irssi/network"
   exit 1
@@ -20,7 +22,7 @@ channel_dirs.each do |dir|
   Channel.find_or_create(:name => channel_name)
 
   log_files = Dir.glob(File.join(dir, '????-??-??.log')).sort
-  log_files.each_slice(log_files.length/8) do |slice|
+  log_files.each_slice(log_files.length/THREADS) do |slice|
     Thread.new do
       slice.each do |file|
         DB.transaction do
